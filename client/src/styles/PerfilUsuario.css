@@ -1,0 +1,575 @@
+/* client/src/styles/PerfilUsuario.css */
+
+:root {
+  --color-primario: #b71c1c;
+  --color-primario-oscuro: #7f0000;
+  --color-acento: #ffb300;
+  --color-fondo: #f8f9fa;
+  --color-texto: #1a1a1a;
+  --color-texto-claro: #6b7280;
+  --color-borde: #e5e7eb;
+  --color-blanco: #ffffff;
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --sombra-media: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.perfil-container {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.perfil-header {
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  box-shadow: var(--sombra-media);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.perfil-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: white;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-link {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 16px 6px 6px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.user-menu:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-acento);
+  color: var(--color-primario-oscuro);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  border: 2px solid white;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ===== LAYOUT ===== */
+.dashboard-layout {
+  display: flex;
+  flex: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 30px 20px;
+  gap: 30px;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.perfil-card {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+}
+
+.perfil-avatar-grande {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--color-acento);
+  color: var(--color-primario-oscuro);
+  display: grid;
+  place-items: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0 auto 15px;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.perfil-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+
+.perfil-card p {
+  font-size: 0.85rem;
+  color: var(--color-texto-claro);
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.stat-item {
+  background: #fdfaf6;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-borde);
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-primario);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-texto-claro);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-menu {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+  list-style: none;
+}
+
+.sidebar-menu li button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  color: var(--color-texto);
+  background: none;
+  border: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+  margin-bottom: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.sidebar-menu li button:hover,
+.sidebar-menu li button.active {
+  background: #fef2f2;
+  color: var(--color-primario);
+}
+
+.sidebar-menu li button.active {
+  font-weight: 700;
+}
+
+.sidebar-menu li button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.btn-logout:hover {
+  background: #fecaca;
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.content-header h1 {
+  font-size: 1.8rem;
+  color: var(--color-texto);
+  font-weight: 800;
+}
+
+.btn-primary {
+  background: var(--color-primario);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-primary:hover {
+  background: var(--color-primario-oscuro);
+}
+
+/* ===== TARJETAS DE RECETAS GUARDADAS ===== */
+.grid-recetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.receta-card {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+  transition: transform 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.receta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sombra-media);
+}
+
+.receta-img {
+  aspect-ratio: 4/3;
+  background: #e5e7eb;
+  position: relative;
+}
+
+.receta-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-favorito {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #ef4444;
+  transition: transform 0.2s;
+}
+
+.btn-favorito:hover {
+  transform: scale(1.1);
+}
+
+.receta-info {
+  padding: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.receta-categoria {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-acento);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.receta-info h3 {
+  font-size: 1.1rem;
+  color: var(--color-texto);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.receta-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: var(--color-texto-claro);
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-borde);
+}
+
+.receta-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== FORMULARIO SUBIR RECETA ===== */
+.form-card {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: var(--sombra-suave);
+  border: 1px solid var(--color-borde);
+  max-width: 700px;
+}
+
+.aviso-admin {
+  background: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  color: #1e3a8a;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 25px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fafafa;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--color-primario);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.file-upload {
+  border: 2px dashed var(--color-borde);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  background: #fafafa;
+  color: var(--color-texto-claro);
+  font-size: 0.9rem;
+}
+
+.file-upload:hover {
+  border-color: var(--color-primario);
+  background: #fef2f2;
+}
+
+.btn-submit {
+  background: var(--color-acento);
+  color: var(--color-primario-oscuro);
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  font-family: inherit;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background: #ffca28;
+  transform: translateY(-2px);
+}
+
+/* ===== MIS RECETAS ENVIADAS (ESTADOS) ===== */
+.receta-enviada {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--color-borde);
+  margin-bottom: 12px;
+}
+
+.receta-enviada img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.receta-enviada-info {
+  flex: 1;
+}
+
+.receta-enviada-info h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.receta-enviada-info p {
+  font-size: 0.8rem;
+  color: var(--color-texto-claro);
+  margin-bottom: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-pendiente {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.badge-aprobada {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge-rechazada {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .dashboard-layout {
+    flex-direction: column;
+    padding: 15px;
+  }
+  .sidebar {
+    width: 100%;
+  }
+  .perfil-card {
+    display: flex;
+    text-align: left;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .perfil-avatar-grande {
+    margin: 0;
+  }
+  .stats-grid {
+    margin-bottom: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .receta-enviada {
+    flex-direction: column;
+    text-align: center;
+  }
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
