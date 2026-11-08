@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Register.css';
+import '../../styles/Register.css';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
