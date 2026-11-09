@@ -1,8 +1,8 @@
-// client/src/components/Login/Login.jsx
+// client/src/components/Login.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { loginUsuario } from '../../services/authService';
-import '../../styles/Login.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUsuario } from '../services/authService';
+import '../styles/Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const Login = () => {
 
     try {
       await loginUsuario(email, password);
-      navigate('/dashboard'); // Redirige a otra ruta (debes crearla luego)
+      navigate('/perfil');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,13 +35,13 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page auth-page">
       <header className="login-header">
-        <a href="/" className="logo">
+        <Link to="/" className="logo">
           <span className="logo-icono">🍳</span>
           Qué cocino hoy
-        </a>
-        <a href="/" className="volver">← Volver al inicio</a>
+        </Link>
+        <Link to="/" className="volver">← Volver al inicio</Link>
       </header>
 
       <main className="contenedor-principal">
@@ -100,7 +100,7 @@ const Login = () => {
             </div>
 
             <div className="olvidaste">
-              <a href="/recuperar">¿Olvidaste tu contraseña?</a>
+              <Link to="/recuperar">¿Olvidaste tu contraseña?</Link>
             </div>
 
             <button type="submit" className="btn-iniciar" disabled={loading}>
@@ -109,7 +109,7 @@ const Login = () => {
           </form>
 
           <p className="registro">
-            ¿Aún no tienes cuenta? <a href="/registro">Regístrate</a>
+            ¿Aún no tienes cuenta? <Link to="/registro">Regístrate</Link>
           </p>
         </div>
       </main>
@@ -117,9 +117,9 @@ const Login = () => {
       <footer className="login-footer">
         <span>Buenas ideas para aprovechar lo que ya tienes.</span>
         <div className="footer-enlaces">
-          <a href="/privacidad">Privacidad</a>
-          <a href="/terminos">Términos</a>
-          <a href="/ayuda">Ayuda</a>
+          <Link to="/privacidad">Privacidad</Link>
+          <Link to="/terminos">Términos</Link>
+          <Link to="/ayuda">Ayuda</Link>
         </div>
       </footer>
     </div>

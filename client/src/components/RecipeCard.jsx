@@ -1,15 +1,19 @@
 // client/src/components/RecipeCard.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/RecipeCard.css';
 
 export default function RecipeCard({ receta, onToggleFavorite }) {
   const { id, titulo, categoria, tiempo, calificacion, opiniones, imagen } = receta;
 
   return (
-    <article class="receta-card">
-      <div class="receta-img">
-        <img src={imagen} alt={titulo} loading="lazy" />
+    <article className="receta-card">
+      <div className="receta-img">
+        <Link to={`/receta/${id}`}>
+          <img src={imagen} alt={titulo} loading="lazy" />
+        </Link>
         <button
-          class="btn-favorito"
+          className="btn-favorito"
           aria-label="Quitar de favoritos"
           onClick={() => onToggleFavorite && onToggleFavorite(id)}
         >
@@ -18,10 +22,12 @@ export default function RecipeCard({ receta, onToggleFavorite }) {
           </svg>
         </button>
       </div>
-      <div class="receta-info">
-        <span class="receta-categoria">{categoria}</span>
-        <h3>{titulo}</h3>
-        <div class="receta-meta">
+      <div className="receta-info">
+        <span className="receta-categoria">{categoria}</span>
+        <h3>
+          <Link to={`/receta/${id}`}>{titulo}</Link>
+        </h3>
+        <div className="receta-meta">
           <span>⏱ {tiempo} min</span>
           <span>⭐ {calificacion} ({opiniones})</span>
         </div>

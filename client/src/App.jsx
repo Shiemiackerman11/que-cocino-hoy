@@ -1,39 +1,39 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// client/src/App.jsx
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
-// Importamos los estilos globales (con la ruta correcta)
-import './styles/Login.css';
-import './styles/Register.css';
+import Inicio from './pages/Inicio';
+import Categoria from './pages/Categoria';
+import DetalleReceta from './pages/DetalleReceta';
+import PerfilUsuario from './pages/PerfilUsuario';
+import NoEncontrada from './pages/NoEncontrada';
+import Login from './components/login';
+import Register from './components/Register';
 
-// Importamos los componentes
-import Login from './components/Login/Login';
-import Register from './components/Register/Register'; 
+import './styles/global.css';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Al entrar a la raíz, redirige al Login */}
-        <Route path="/" element={<Navigate to="/login" />} />
-        
-        {/* Vistas */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/registro" element={<Register />} />
-        
-        {/* Dashboard temporal */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'sans-serif' }}>
-              <h1>¡Bienvenido al Dashboard!</h1>
-              <p>Has iniciado sesión correctamente.</p>
-              <a href="/login" style={{ color: '#e85d3a' }}>Cerrar sesión</a>
-            </div>
-          } 
-        />
-      </Routes>
-    </Router>
-  );
+// Al cambiar de página, vuelve al inicio de la pantalla.
+function ScrollArriba() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ScrollArriba />
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+        <Route path="/categoria/:id" element={<Categoria />} />
+        <Route path="/receta/:id" element={<DetalleReceta />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Register />} />
+        <Route path="/perfil" element={<PerfilUsuario />} />
+        <Route path="*" element={<NoEncontrada />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}

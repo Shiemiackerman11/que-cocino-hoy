@@ -1,17 +1,22 @@
 // client/src/pages/PerfilUsuario.jsx
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import RecipeCard from '../components/RecipeCard';
+import { obtenerUsuario, cerrarSesion } from '../services/authService';
 import '../styles/PerfilUsuario.css';
 
 export default function PerfilUsuario() {
+  const navigate = useNavigate();
+  const sesion = obtenerUsuario();
+
   // Estado de navegación entre pestañas
   const [seccionActiva, setSeccionActiva] = useState('recetas');
 
   // Estado para la información del usuario
   const [usuario, setUsuario] = useState({
-    nombre: 'Daniel Pérez',
-    correo: 'daniel@ejemplo.com',
-    inicial: 'D',
+    nombre: sesion?.nombre ?? 'Daniel Pérez',
+    correo: sesion?.correo ?? 'daniel@ejemplo.com',
+    inicial: sesion?.inicial ?? 'D',
     stats: {
       guardadas: 12,
       comentarios: 8,
@@ -104,6 +109,11 @@ export default function PerfilUsuario() {
     setRecetasGuardadas((prev) => prev.filter((item) => item.id !== id));
   };
 
+  const handleLogout = () => {
+    cerrarSesion();
+    navigate('/');
+  };
+
   const handleSubmitReceta = (e) => {
     e.preventDefault();
     alert('¡Receta enviada con éxito! Quedará en estado "Pendiente" hasta que el administrador la revise.');
@@ -131,60 +141,60 @@ export default function PerfilUsuario() {
   };
 
   return (
-    <div class="perfil-container">
+    <div className="perfil-container">
       {/* ===== HEADER ===== */}
-      <header class="perfil-header">
-        <a href="/" class="perfil-logo">
+      <header className="perfil-header">
+        <Link to="/" className="perfil-logo">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 11h18M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4M12 3v4" />
             <path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8" />
           </svg>
           Delicias Culinarias
-        </a>
-        <div class="header-right">
-          <a href="/" class="header-link">Volver al inicio</a>
-          <div class="user-menu">
-            <div class="avatar">{usuario.inicial}</div>
-            <span class="user-name">{usuario.nombre.split(' ')[0]}</span>
+        </Link>
+        <div className="header-right">
+          <Link to="/" className="header-link">Volver al inicio</Link>
+          <div className="user-menu">
+            <div className="avatar">{usuario.inicial}</div>
+            <span className="user-name">{usuario.nombre.split(' ')[0]}</span>
           </div>
         </div>
       </header>
 
       {/* ===== DASHBOARD LAYOUT ===== */}
-      <div class="dashboard-layout">
+      <div className="dashboard-layout">
         {/* SIDEBAR */}
-        <aside class="sidebar">
-          <div class="perfil-card">
-            <div class="perfil-avatar-grande">{usuario.inicial}</div>
-            <div class="perfil-info">
+        <aside className="sidebar">
+          <div className="perfil-card">
+            <div className="perfil-avatar-grande">{usuario.inicial}</div>
+            <div className="perfil-info">
               <h2>{usuario.nombre}</h2>
               <p>{usuario.correo}</p>
             </div>
-            <div class="stats-grid">
-              <div class="stat-item">
-                <span class="stat-number">{usuario.stats.guardadas}</span>
-                <span class="stat-label">Guardadas</span>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <span className="stat-number">{usuario.stats.guardadas}</span>
+                <span className="stat-label">Guardadas</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">{usuario.stats.comentarios}</span>
-                <span class="stat-label">Comentarios</span>
+              <div className="stat-item">
+                <span className="stat-number">{usuario.stats.comentarios}</span>
+                <span className="stat-label">Comentarios</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">{usuario.stats.enviadas}</span>
-                <span class="stat-label">Enviadas</span>
+              <div className="stat-item">
+                <span className="stat-number">{usuario.stats.enviadas}</span>
+                <span className="stat-label">Enviadas</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">{usuario.stats.aprobadas}</span>
-                <span class="stat-label">Aprobadas</span>
+              <div className="stat-item">
+                <span className="stat-number">{usuario.stats.aprobadas}</span>
+                <span className="stat-label">Aprobadas</span>
               </div>
             </div>
           </div>
 
           {/* Menú de Navegación Lateral */}
-          <ul class="sidebar-menu">
+          <ul className="sidebar-menu">
             <li>
               <button
-                class={seccionActiva === 'recetas' ? 'active' : ''}
+                className={seccionActiva === 'recetas' ? 'active' : ''}
                 onClick={() => setSeccionActiva('recetas')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -195,7 +205,7 @@ export default function PerfilUsuario() {
             </li>
             <li>
               <button
-                class={seccionActiva === 'subir' ? 'active' : ''}
+                className={seccionActiva === 'subir' ? 'active' : ''}
                 onClick={() => setSeccionActiva('subir')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -206,7 +216,7 @@ export default function PerfilUsuario() {
             </li>
             <li>
               <button
-                class={seccionActiva === 'enviadas' ? 'active' : ''}
+                className={seccionActiva === 'enviadas' ? 'active' : ''}
                 onClick={() => setSeccionActiva('enviadas')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -217,7 +227,7 @@ export default function PerfilUsuario() {
             </li>
             <li>
               <button
-                class={seccionActiva === 'comentarios' ? 'active' : ''}
+                className={seccionActiva === 'comentarios' ? 'active' : ''}
                 onClick={() => setSeccionActiva('comentarios')}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -228,7 +238,7 @@ export default function PerfilUsuario() {
             </li>
           </ul>
 
-          <button class="btn-logout" onClick={() => alert('Cerrando sesión...')}>
+          <button className="btn-logout" onClick={handleLogout}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
@@ -239,21 +249,21 @@ export default function PerfilUsuario() {
         </aside>
 
         {/* CONTENIDO PRINCIPAL */}
-        <main class="main-content">
+        <main className="main-content">
           {/* SECCIÓN 1: RECETAS GUARDADAS */}
           {seccionActiva === 'recetas' && (
-            <div class="seccion-contenido">
-              <div class="content-header">
+            <div className="seccion-contenido">
+              <div className="content-header">
                 <h1>Mis recetas guardadas</h1>
-                <a href="/explorar" class="btn-primary">
+                <Link to="/" className="btn-primary">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 5v14M5 12h14" />
                   </svg>
                   Explorar más recetas
-                </a>
+                </Link>
               </div>
 
-              <div class="grid-recetas">
+              <div className="grid-recetas">
                 {recetasGuardadas.map((receta) => (
                   <RecipeCard
                     key={receta.id}
@@ -267,13 +277,13 @@ export default function PerfilUsuario() {
 
           {/* SECCIÓN 2: SUBIR NUEVA RECETA */}
           {seccionActiva === 'subir' && (
-            <div class="seccion-contenido">
-              <div class="content-header">
+            <div className="seccion-contenido">
+              <div className="content-header">
                 <h1>Subir nueva receta</h1>
               </div>
 
-              <div class="form-card">
-                <div class="aviso-admin">
+              <div className="form-card">
+                <div className="aviso-admin">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
                     <path d="M12 8v4M12 16h.01" />
@@ -284,7 +294,7 @@ export default function PerfilUsuario() {
                 </div>
 
                 <form onSubmit={handleSubmitReceta}>
-                  <div class="form-group">
+                  <div className="form-group">
                     <label htmlFor="titulo">Nombre de la receta</label>
                     <input
                       type="text"
@@ -296,7 +306,7 @@ export default function PerfilUsuario() {
                     />
                   </div>
 
-                  <div class="form-group">
+                  <div className="form-group">
                     <label htmlFor="categoria">Categoría</label>
                     <select
                       id="categoria"
@@ -314,7 +324,7 @@ export default function PerfilUsuario() {
                     </select>
                   </div>
 
-                  <div class="form-group">
+                  <div className="form-group">
                     <label htmlFor="descripcion">Descripción corta</label>
                     <input
                       type="text"
@@ -326,10 +336,10 @@ export default function PerfilUsuario() {
                     />
                   </div>
 
-                  <div class="form-group">
+                  <div className="form-group">
                     <label>Imagen del platillo</label>
                     <div
-                      class="file-upload"
+                      className="file-upload"
                       onClick={() => document.getElementById('fileInput').click()}
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginBottom: '5px' }}>
@@ -342,7 +352,7 @@ export default function PerfilUsuario() {
                     <input type="file" id="fileInput" accept="image/*" style={{ display: 'none' }} />
                   </div>
 
-                  <div class="form-group">
+                  <div className="form-group">
                     <label htmlFor="ingredientes">Ingredientes (uno por línea)</label>
                     <textarea
                       id="ingredientes"
@@ -353,7 +363,7 @@ export default function PerfilUsuario() {
                     />
                   </div>
 
-                  <div class="form-group">
+                  <div className="form-group">
                     <label htmlFor="pasos">Pasos de preparación</label>
                     <textarea
                       id="pasos"
@@ -364,7 +374,7 @@ export default function PerfilUsuario() {
                     />
                   </div>
 
-                  <button type="submit" class="btn-submit">Enviar receta para revisión</button>
+                  <button type="submit" className="btn-submit">Enviar receta para revisión</button>
                 </form>
               </div>
             </div>
@@ -372,8 +382,8 @@ export default function PerfilUsuario() {
 
           {/* SECCIÓN 3: MIS RECETAS ENVIADAS */}
           {seccionActiva === 'enviadas' && (
-            <div class="seccion-contenido">
-              <div class="content-header">
+            <div className="seccion-contenido">
+              <div className="content-header">
                 <h1>Mis recetas enviadas</h1>
               </div>
               <p style={{ color: 'var(--color-texto-claro)', marginBottom: '20px', fontSize: '0.95rem' }}>
@@ -383,15 +393,15 @@ export default function PerfilUsuario() {
               {recetasEnviadas.map((receta) => (
                 <div
                   key={receta.id}
-                  class="receta-enviada"
+                  className="receta-enviada"
                   style={{ opacity: receta.estado === 'rechazada' ? 0.85 : 1 }}
                 >
                   <img src={receta.imagen} alt={receta.titulo} />
-                  <div class="receta-enviada-info">
+                  <div className="receta-enviada-info">
                     <h4>{receta.titulo}</h4>
                     <p>Enviada: {receta.fecha}</p>
 
-                    <span class={`badge badge-${receta.estado}`}>
+                    <span className={`badge badge-${receta.estado}`}>
                       {receta.estado === 'aprobada' && (
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                           <polyline points="20 6 9 17 4 12" />
@@ -419,9 +429,9 @@ export default function PerfilUsuario() {
                   </div>
 
                   {receta.estado === 'aprobada' && (
-                    <a href={`/receta/${receta.id}`} class="btn-primary" style={{ padding: '8px 15px', fontSize: '0.8rem' }}>
+                    <Link to={`/receta/${receta.id}`} className="btn-primary" style={{ padding: '8px 15px', fontSize: '0.8rem' }}>
                       Ver en el catálogo
-                    </a>
+                    </Link>
                   )}
                 </div>
               ))}
@@ -430,8 +440,8 @@ export default function PerfilUsuario() {
 
           {/* SECCIÓN 4: MIS COMENTARIOS */}
           {seccionActiva === 'comentarios' && (
-            <div class="seccion-contenido">
-              <div class="content-header">
+            <div className="seccion-contenido">
+              <div className="content-header">
                 <h1>Mis comentarios</h1>
               </div>
               <p style={{ color: 'var(--color-texto-claro)' }}>Aquí se desplegarán tus comentarios e interacciones en otras recetas.</p>

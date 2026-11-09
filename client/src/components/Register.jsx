@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import '../../styles/Register.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { registrarUsuario } from '../services/authService';
+import '../styles/Register.css';
 
 export default function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     nombre: '',
     primer_apellido: '',
@@ -18,21 +23,35 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Datos del formulario de registro:', formData);
-    // Aquí conectarás luego con tu backend Node.js
+    setError('');
+
+    if (!formData.nombre || !formData.primer_apellido || !formData.email || !formData.password) {
+      setError('Por favor, completa nombre, primer apellido, correo y contraseña.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await registrarUsuario(formData);
+      navigate('/login');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="register-container">
+    <div className="register-container auth-page">
       {/* ===== HEADER ===== */}
       <header>
-        <a href="#" className="logo">
+        <Link to="/" className="logo">
           <span className="logo-icono">🍳</span>
           Qué cocino hoy
-        </a>
-        <a href="#" className="volver">← Volver al inicio</a>
+        </Link>
+        <Link to="/" className="volver">← Volver al inicio</Link>
       </header>
 
       {/* ===== CONTENIDO PRINCIPAL ===== */}
@@ -64,6 +83,8 @@ export default function Register() {
 
           {/* Separador */}
           <div className="separador">o usa tu correo</div>
+
+          {error && <div className="error-mensaje">{error}</div>}
 
           {/* Formulario */}
           <form onSubmit={handleSubmit}>
@@ -130,17 +151,19 @@ export default function Register() {
               </button>
             </div>
 
-            <button type="submit" className="btn-crear">Crear mi cuenta</button>
+            <button type="submit" className="btn-crear" disabled={loading}>
+              {loading ? 'Creando cuenta...' : 'Crear mi cuenta'}
+            </button>
           </form>
 
           {/* Términos */}
           <p className="terminos">
-            Al crear tu cuenta aceptas los <a href="#">Términos de uso</a> y el <a href="#">Aviso de privacidad</a>.
+            Al crear tu cuenta aceptas los <Link to="/terminos">Términos de uso</Link> y el <Link to="/privacidad">Aviso de privacidad</Link>.
           </p>
 
           {/* Iniciar sesión */}
           <p className="iniciar-sesion">
-            ¿Ya tienes cuenta? <a href="#">Inicia sesión</a>
+            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
           </p>
         </div>
       </main>
@@ -149,9 +172,9 @@ export default function Register() {
       <footer>
         <span>Buenos hábitos para aprovechar lo que ya tienes.</span>
         <div className="footer-enlaces">
-          <a href="#">Privacidad</a>
-          <a href="#">Términos</a>
-          <a href="#">Ayuda</a>
+          <Link to="/privacidad">Privacidad</Link>
+          <Link to="/terminos">Términos</Link>
+          <Link to="/ayuda">Ayuda</Link>
         </div>
       </footer>
     </div>

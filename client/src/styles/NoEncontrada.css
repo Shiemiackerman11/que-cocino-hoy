@@ -1,0 +1,4 @@
+/* client/src/styles/NoEncontrada.css */
+.pagina-no-encontrada main { max-width: 560px; margin: 90px auto; padding: 0 20px; text-align: center; }
+.pagina-no-encontrada h1 { color: var(--color-primario-oscuro); font-size: 2rem; margin-bottom: 10px; }
+.pagina-no-encontrada p { color: var(--color-texto-claro); }
