@@ -1,0 +1,50 @@
+/* client/src/styles/global.css — variables y reset compartidos por toda la app */
+:root {
+  --color-primario: #b71c1c;
+  --color-primario-oscuro: #7f0000;
+  --color-acento: #ffb300;
+  --color-fondo: #fff8f0;
+  --color-texto: #333;
+  --color-texto-claro: #6b7280;
+  --color-borde: #e5e7eb;
+  --color-blanco: #ffffff;
+  --sombra: 0 4px 15px rgba(0, 0, 0, 0.06);
+  --sombra-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sombra-media: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Botón de regreso reutilizable en estados vacíos / 404 */
+.btn-volver {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 11px 24px;
+  border-radius: 50px;
+  background: var(--color-primario);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.btn-volver:hover { background: var(--color-primario-oscuro); }

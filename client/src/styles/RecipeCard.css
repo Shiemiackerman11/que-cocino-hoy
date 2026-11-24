@@ -1,0 +1,48 @@
+/* client/src/styles/RecipeCard.css — tarjeta con botón de favorito (perfil) */
+.receta-card {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  box-shadow: var(--sombra);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.receta-card:hover { transform: translateY(-4px); box-shadow: var(--sombra-hover); }
+
+.receta-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+.receta-img a { display: block; height: 100%; }
+.receta-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.btn-favorito {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-primario);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, background 0.2s;
+}
+.btn-favorito:hover { transform: scale(1.1); background: #fff; }
+
+.receta-info { padding: 16px 18px 18px; }
+.receta-categoria {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-primario);
+  background: #fee2e2;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.receta-info h3 { font-size: 1.05rem; line-height: 1.3; margin-bottom: 10px; }
+.receta-info h3 a { color: var(--color-primario-oscuro); text-decoration: none; }
+.receta-info h3 a:hover { text-decoration: underline; }
+.receta-meta { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--color-texto-claro); font-weight: 600; }
