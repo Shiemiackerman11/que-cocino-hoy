@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 
 import Navbar from "../components/Navbar";
-import SearchBar from "../components/Searchbar";
+import SearchBar from "../components/SearchBar";
 import CategoryGrid from "../components/CategoryGrid";
 import EmptyState from "../components/EmptyState";
 
