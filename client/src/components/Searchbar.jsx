@@ -1,107 +1,80 @@
+// client/src/components/SearchBar.jsx
+import { useId } from 'react';
+import '../styles/SearchBar.css';
 
-import { useState } from "react";
+/**
+ * variante "hero":   buscador grande sobre imagen, con chips de sugerencia.
+ * variante "inline": buscador compacto dentro de una página de categoría.
+ */
+export default function SearchBar({
+  valor,
+  onCambio,
+  onBuscar,
+  placeholder = 'Buscar...',
+  etiqueta = 'Buscar',
+  sugerencias = [],
+  variante = 'hero',
+  ariaDescribedBy,
+}) {
+  const idInput = useId();
 
-function SearchBar({ onSearch }) {
-    const [consulta, setConsulta] = useState("");
+  const alEnviar = (e) => {
+    e.preventDefault();
+    onBuscar?.(valor);
+  };
 
-    const sugerencias = [
-        "tacos",
-        "pizza",
-        "postres",
-        "bebidas"
-    ];
+  const usarSugerencia = (texto) => {
+    onCambio(texto);
+    onBuscar?.(texto);
+  };
 
-    function buscar(e) {
-        e.preventDefault();
-        onSearch(consulta);
-    }
+  return (
+    <form className={`buscador buscador--${variante}`} role="search" onSubmit={alEnviar}>
+      <div className="buscador-caja">
+        <svg className="icono-buscar" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
 
-    function limpiar() {
-        setConsulta("");
-        onSearch("");
-    }
+        <label htmlFor={idInput} className="sr-only">{etiqueta}</label>
+        <input
+          type="search"
+          id={idInput}
+          value={valor}
+          placeholder={placeholder}
+          autoComplete="off"
+          aria-describedby={ariaDescribedBy}
+          onChange={(e) => onCambio(e.target.value)}
+          onKeyDown={(e) => e.key === 'Escape' && onCambio('')}
+        />
 
-    function seleccionarSugerencia(texto) {
-        setConsulta(texto);
-        onSearch(texto);
-    }
+        {valor && (
+          <button type="button" className="btn-limpiar" aria-label="Limpiar búsqueda" onClick={() => onCambio('')}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
 
-    return (
-        <form
-            className="buscador-platillos"
-            role="search"
-            onSubmit={buscar}
-        >
-            <div className="buscador-caja">
+        <button type="submit" className="btn-buscar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <span>Buscar</span>
+        </button>
+      </div>
 
-                <svg
-                    className="icono-buscar"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                >
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
-                </svg>
-
-                <label
-                    htmlFor="buscarPlatillo"
-                    className="sr-only"
-                >
-                    Buscar platillos
-                </label>
-
-                <input
-                    type="search"
-                    id="buscarPlatillo"
-                    placeholder="Busca tacos, pizza, postres..."
-                    autoComplete="off"
-                    value={consulta}
-                    onChange={(e) => {
-                        setConsulta(e.target.value);
-                        onSearch(e.target.value);
-                    }}
-                />
-
-                {consulta.length > 0 && (
-                    <button
-                        type="button"
-                        className="btn-limpiar visible"
-                        aria-label="Limpiar búsqueda"
-                        onClick={limpiar}
-                    >
-                        ×
-                    </button>
-                )}
-
-                <button
-                    type="submit"
-                    className="btn-buscar"
-                >
-                    Buscar
-                </button>
-            </div>
-
-            <div className="sugerencias-rapidas">
-                <span>Prueba:</span>
-
-                {sugerencias.map((texto) => (
-                    <button
-                        key={texto}
-                        type="button"
-                        className="chip-sugerencia"
-                        data-sugerencia={texto}
-                        onClick={() =>
-                            seleccionarSugerencia(texto)
-                        }
-                    >
-                        {texto}
-                    </button>
-                ))}
-            </div>
-        </form>
-    );
+      {sugerencias.length > 0 && (
+        <div className="sugerencias-rapidas">
+          <span>Prueba:</span>
+          {sugerencias.map((texto) => (
+            <button key={texto} type="button" className="chip-sugerencia" onClick={() => usarSugerencia(texto)}>
+              {texto}
+            </button>
+          ))}
+        </div>
+      )}
+    </form>
+  );
 }
-
-export default SearchBar;

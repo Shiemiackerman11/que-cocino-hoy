@@ -1,34 +1,22 @@
+// client/src/components/CategoryCard.jsx
+import { Link } from 'react-router-dom';
+import CategoryIcon from './CategoryIcon';
+import '../styles/CategoryCard.css';
 
-function CategoryCard({ categoria, onSelect }) {
-    return (
-        <a
-            href="#categorias"
-            className="categoria"
-            data-cat={categoria.id}
-            style={{
-                "--categoria-color": categoria.color,
-                "--categoria-bg": categoria.bg
-            }}
-            onClick={(e) => {
-                e.preventDefault();
-                onSelect(categoria.id);
-            }}
-        >
-            <div
-                className="categoria-icono"
-                aria-hidden="true"
-                dangerouslySetInnerHTML={{
-                    __html: categoria.icono
-                }}
-            />
+export default function CategoryCard({ categoria }) {
+  const { id, nombre, cantidad, color, bg } = categoria;
 
-            <h3>{categoria.nombre}</h3>
-
-            <span className="cantidad">
-                {categoria.cantidad} platillos
-            </span>
-        </a>
-    );
+  return (
+    <Link
+      to={`/categoria/${id}`}
+      className="categoria"
+      style={{ '--categoria-color': color, '--categoria-bg': bg }}
+    >
+      <div className="categoria-icono">
+        <CategoryIcon id={id} />
+      </div>
+      <h3>{nombre}</h3>
+      <span className="cantidad">{cantidad} platillos</span>
+    </Link>
+  );
 }
-
-export default CategoryCard;
