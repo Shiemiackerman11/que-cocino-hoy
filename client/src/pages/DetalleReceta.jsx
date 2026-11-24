@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SimpleHeader from '../components/SimpleHeader';
 import { obtenerReceta } from '../services/recetasService';
+import { generarRecetaPdf } from '../utils/generarRecetaPdf';
 import '../styles/DetalleReceta.css';
 
 const ESTRELLAS = [1, 2, 3, 4, 5];
@@ -84,6 +85,14 @@ export default function DetalleReceta() {
           <p className="descripcion-receta">{receta.descripcionLarga ?? receta.descripcion}</p>
 
           <div className="acciones-container">
+            <button
+              type="button"
+              className="btn-descargar-pdf"
+              onClick={() => generarRecetaPdf(receta)}
+            >
+              ⬇️ Descargar receta 
+            </button>
+            
             <button
               type="button"
               className={`btn-guardar${favorita ? ' guardada' : ''}`}

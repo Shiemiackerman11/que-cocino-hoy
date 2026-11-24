@@ -41,3 +41,31 @@ export async function obtenerReceta(id) {
   if (!receta) throw new Error('No encontrado');
   return receta;
 }
+
+async function enviarInteraccion(id, accion, datos) {
+  if (USAR_DATOS_DEMO) {
+    await esperar();
+    return;
+  }
+
+  const token = localStorage.getItem('qch_token');
+  const respuesta = await fetch(`${API_URL}/recetas/${id}/${accion}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(datos),
+  });
+  const resultado = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) throw new Error(resultado.mensaje || 'No se pudo guardar tu interacción.');
+  return resultado;
+}
+
+export function actualizarFavorito(id, favorito) {
+  return enviarInteraccion(id, 'favorito', { favorito });
+}
+
+export function enviarCalificacion(id, calificacion) {
+  return enviarInteraccion(id, 'calificacion', { calificacion });
+}

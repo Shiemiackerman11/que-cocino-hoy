@@ -69,6 +69,21 @@
   flex-wrap: wrap;
   gap: 15px;
 }
+.pagina-receta .btn-descargar-pdf{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-primario);
+  color: white;
+  border: 2px solid var(--color-primario);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.pagina-receta .btn-descargar-pdf:hover{ background: var(--color-primario-oscuro); border-color: var(--color-primario-oscuro); }
 .pagina-receta .btn-guardar {
   display: flex;
   align-items: center;
