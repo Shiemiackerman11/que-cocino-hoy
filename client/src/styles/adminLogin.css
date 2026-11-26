@@ -1,0 +1,293 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --color-primario: #1e293b;
+  --color-primario-oscuro: #0f172a;
+  --color-acento: #3b82f6;
+  --color-fondo: #f1f5f9;
+  --color-texto: #1e293b;
+  --color-texto-claro: #64748b;
+  --color-borde: #e2e8f0;
+  --color-blanco: #ffffff;
+  --sombra-suave: 0 1px 3px rgba(0,0,0,0.05);
+  --sombra-media: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --sombra-fuerte: 0 20px 50px -12px rgba(0,0,0,0.35);
+}
+
+/* ===== BODY / LAYOUT ===== */
+.admin-page {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-primario);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(59,130,246,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(59,130,246,0.12) 0%, transparent 50%);
+  color: var(--color-texto);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.admin-header {
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.logo svg { width: 28px; height: 28px; }
+
+.admin-badge {
+  background: var(--color-acento);
+  color: white;
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+}
+
+.btn-volver {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.25s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.btn-volver:hover { color: white; }
+
+/* ===== CONTENEDOR LOGIN ===== */
+.contenedor-login {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px 60px;
+}
+
+/* ===== TARJETA LOGIN ===== */
+.tarjeta-login {
+  background: var(--color-blanco);
+  border-radius: 20px;
+  box-shadow: var(--sombra-fuerte);
+  width: 100%;
+  max-width: 440px;
+  padding: 45px 40px 35px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tarjeta-login::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-acento), #60a5fa);
+}
+
+/* ===== ÍCONO ADMIN ===== */
+.icono-admin {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, var(--color-primario), var(--color-primario-oscuro));
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: white;
+  box-shadow: 0 10px 25px -5px rgba(30,41,59,0.4);
+}
+.icono-admin svg { width: 34px; height: 34px; }
+
+.tarjeta-login h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-primario);
+  text-align: center;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.subtitulo {
+  text-align: center;
+  color: var(--color-texto-claro);
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* ===== CAMPOS ===== */
+.campo {
+  margin-bottom: 18px;
+}
+
+.campo label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-texto);
+  margin-bottom: 7px;
+  letter-spacing: 0.2px;
+}
+
+.campo input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  outline: none;
+  background: #f8fafc;
+  color: var(--color-texto);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.campo input:focus {
+  border-color: var(--color-acento);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+.campo input::placeholder { color: #94a3b8; }
+
+/* ===== CAMPO CONTRASEÑA ===== */
+.campo-password { position: relative; }
+.campo-password input { padding-right: 46px; }
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-texto-claro);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.toggle-password:hover {
+  color: var(--color-primario);
+  background: #f1f5f9;
+}
+
+/* ===== OPCIONES ===== */
+.opciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  font-size: 0.82rem;
+}
+
+.recordarme {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--color-texto-claro);
+  cursor: pointer;
+  user-select: none;
+}
+
+.recordarme input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-acento);
+  cursor: pointer;
+}
+
+.opciones a {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-weight: 600;
+}
+.opciones a:hover { text-decoration: underline; }
+
+/* ===== BOTÓN ===== */
+.btn-ingresar {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primario);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
+}
+
+.btn-ingresar:hover {
+  background: var(--color-primario-oscuro);
+  box-shadow: 0 8px 20px -6px rgba(30,41,59,0.5);
+}
+
+.btn-ingresar:active { transform: scale(0.985); }
+
+/* ===== AVISO SEGURIDAD ===== */
+.aviso-seguridad {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 26px;
+  padding: 12px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+.aviso-seguridad svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ===== FOOTER ===== */
+.admin-footer {
+  padding: 18px 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .admin-header { padding: 15px 20px; }
+  .logo { font-size: 1rem; }
+  .volver-texto { display: none; }
+  .tarjeta-login { padding: 35px 25px 28px; }
+  .tarjeta-login h1 { font-size: 1.35rem; }
+  .icono-admin { width: 60px; height: 60px; border-radius: 15px; }
+  .icono-admin svg { width: 28px; height: 28px; }
+  .admin-footer { padding: 15px 20px; }
+}
