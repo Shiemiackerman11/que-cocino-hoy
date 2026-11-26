@@ -7,7 +7,7 @@ import Categoria from './pages/Categoria';
 import DetalleReceta from './pages/DetalleReceta';
 import PerfilUsuario from './pages/PerfilUsuario';
 import NoEncontrada from './pages/NoEncontrada';
-import Login from './components/login';
+import Login from './components/Login';
 import Register from './components/Register';
 
 import './styles/global.css';
