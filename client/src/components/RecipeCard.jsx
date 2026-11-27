@@ -1,20 +1,26 @@
 // client/src/components/RecipeCard.jsx
-import React from 'react';
+// Tarjeta de receta con botón de favorito (se usa en el perfil): imagen, nombre, categoría y tiempo.
 import { Link } from 'react-router-dom';
+import { formatearTiempo } from '../utils/texto';
 import '../styles/RecipeCard.css';
 
 export default function RecipeCard({ receta, onToggleFavorite }) {
-  const { id, titulo, categoria, tiempo, calificacion, opiniones, imagen } = receta;
+  const { id, titulo, categoria, tiempo, imagen } = receta;
 
   return (
     <article className="receta-card">
       <div className="receta-img">
         <Link to={`/receta/${id}`}>
-          <img src={imagen} alt={titulo} loading="lazy" />
+          {imagen ? (
+            <img src={imagen} alt={titulo} loading="lazy" />
+          ) : (
+            <div className="receta-sin-imagen" aria-hidden="true">🍽️</div>
+          )}
         </Link>
         <button
+          type="button"
           className="btn-favorito"
-          aria-label="Quitar de favoritos"
+          aria-label={`Quitar ${titulo} de favoritos`}
           onClick={() => onToggleFavorite && onToggleFavorite(id)}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
@@ -23,13 +29,12 @@ export default function RecipeCard({ receta, onToggleFavorite }) {
         </button>
       </div>
       <div className="receta-info">
-        <span className="receta-categoria">{categoria}</span>
+        {categoria && <span className="receta-categoria">{categoria}</span>}
         <h3>
           <Link to={`/receta/${id}`}>{titulo}</Link>
         </h3>
         <div className="receta-meta">
-          <span>⏱ {tiempo} min</span>
-          <span>⭐ {calificacion} ({opiniones})</span>
+          <span>⏱ {formatearTiempo(tiempo)}</span>
         </div>
       </div>
     </article>

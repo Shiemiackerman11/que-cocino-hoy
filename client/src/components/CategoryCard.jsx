@@ -1,6 +1,7 @@
 // client/src/components/CategoryCard.jsx
 import { Link } from 'react-router-dom';
 import CategoryIcon from './CategoryIcon';
+import { etiquetaCantidad } from '../utils/texto';
 import '../styles/CategoryCard.css';
 
 export default function CategoryCard({ categoria }) {
@@ -16,7 +17,7 @@ export default function CategoryCard({ categoria }) {
         <CategoryIcon id={id} />
       </div>
       <h3>{nombre}</h3>
-      <span className="cantidad">{cantidad} platillos</span>
+      <span className="cantidad">{etiquetaCantidad(cantidad)}</span>
     </Link>
   );
 }

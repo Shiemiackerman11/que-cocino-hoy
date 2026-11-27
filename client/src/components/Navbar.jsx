@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { obtenerUsuario } from '../services/authService';
+import { etiquetaCantidad } from '../utils/texto';
 import '../styles/Navbar.css';
 
 export default function Navbar({ categorias = [] }) {
@@ -101,7 +102,7 @@ export default function Navbar({ categorias = [] }) {
                       <div className="mega-info">
                         <h5>{cat.nombre}</h5>
                         <p>{cat.descripcion}</p>
-                        <span className="cantidad">{cat.cantidad} platillos</span>
+                        <span className="cantidad">{etiquetaCantidad(cat.cantidad)}</span>
                       </div>
                     </Link>
                   ))}

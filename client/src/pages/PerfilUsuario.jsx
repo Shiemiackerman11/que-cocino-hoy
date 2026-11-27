@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import RecipeCard from '../components/RecipeCard';
-import { obtenerUsuario, cerrarSesion } from '../services/authService';
+import { obtenerUsuario, obtenerToken, cerrarSesion } from '../services/authService';
+import { obtenerFavoritos, quitarFavorito } from '../services/recetasService';
 import '../styles/PerfilUsuario.css';
 
 export default function PerfilUsuario() {
@@ -18,34 +19,17 @@ export default function PerfilUsuario() {
     correo: sesion?.correo ?? 'daniel@ejemplo.com',
     inicial: sesion?.inicial ?? 'D',
     stats: {
-      guardadas: 12,
       comentarios: 8,
       enviadas: 2,
       aprobadas: 1,
     },
   });
 
-  // Estado para recetas guardadas
-  const [recetasGuardadas, setRecetasGuardadas] = useState([
-    {
-      id: 1,
-      titulo: 'Pizza Artesanal de Pepperoni',
-      categoria: 'Platos Fuertes',
-      tiempo: 45,
-      calificacion: 4.8,
-      opiniones: 120,
-      imagen: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=70&fm=webp',
-    },
-    {
-      id: 2,
-      titulo: 'Ensalada de Garbanzo y Limón',
-      categoria: 'Vegetarianos',
-      tiempo: 15,
-      calificacion: 4.5,
-      opiniones: 85,
-      imagen: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=70&fm=webp',
-    },
-  ]);
+  // Recetas guardadas en favoritos (vienen de Spoonacular a través del servidor)
+  const [recetasGuardadas, setRecetasGuardadas] = useState([]);
+  const [totalGuardadas, setTotalGuardadas] = useState(0);
+  const [estadoFavoritos, setEstadoFavoritos] = useState('cargando'); // cargando | listo | error | sinsesion
+  const [errorFavoritos, setErrorFavoritos] = useState('');
 
   // Estado para recetas enviadas
   const [recetasEnviadas, setRecetasEnviadas] = useState([
@@ -86,14 +70,44 @@ export default function PerfilUsuario() {
     pasos: '',
   });
 
+  // Carga de favoritos reales
+  useEffect(() => {
+    if (!obtenerToken()) {
+      setEstadoFavoritos('sinsesion');
+      return undefined;
+    }
+
+    let activo = true;
+    obtenerFavoritos()
+      .then(({ total, datos }) => {
+        if (!activo) return;
+        setRecetasGuardadas(datos);
+        setTotalGuardadas(total);
+        setEstadoFavoritos('listo');
+      })
+      .catch((err) => {
+        if (!activo) return;
+        if (err.status === 401) {
+          cerrarSesion();
+          setEstadoFavoritos('sinsesion');
+          return;
+        }
+        setErrorFavoritos(err.message);
+        setEstadoFavoritos('error');
+      });
+
+    return () => {
+      activo = false;
+    };
+  }, []);
+
   /*
-  // PREPARADO PARA CONEXIÓN FUTURA AL SERVIDOR:
+  // PENDIENTE DE CONECTAR AL SERVIDOR: datos del usuario, recetas enviadas y comentarios.
   useEffect(() => {
     // async function fetchPerfil() {
     //   const response = await fetch('/api/usuarios/perfil');
     //   const data = await response.json();
     //   setUsuario(data.usuario);
-    //   setRecetasGuardadas(data.guardadas);
     //   setRecetasEnviadas(data.enviadas);
     // }
     // fetchPerfil();
@@ -105,8 +119,15 @@ export default function PerfilUsuario() {
     setNuevaReceta((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleRemoveFavorite = (id) => {
-    setRecetasGuardadas((prev) => prev.filter((item) => item.id !== id));
+  const handleRemoveFavorite = async (id) => {
+    setErrorFavoritos('');
+    try {
+      await quitarFavorito(id);
+      setRecetasGuardadas((prev) => prev.filter((item) => item.id !== id));
+      setTotalGuardadas((total) => Math.max(0, total - 1));
+    } catch (err) {
+      setErrorFavoritos(err.message);
+    }
   };
 
   const handleLogout = () => {
@@ -172,7 +193,7 @@ export default function PerfilUsuario() {
             </div>
             <div className="stats-grid">
               <div className="stat-item">
-                <span className="stat-number">{usuario.stats.guardadas}</span>
+                <span className="stat-number">{estadoFavoritos === 'listo' ? totalGuardadas : '–'}</span>
                 <span className="stat-label">Guardadas</span>
               </div>
               <div className="stat-item">
@@ -263,15 +284,46 @@ export default function PerfilUsuario() {
                 </Link>
               </div>
 
-              <div className="grid-recetas">
-                {recetasGuardadas.map((receta) => (
-                  <RecipeCard
-                    key={receta.id}
-                    receta={receta}
-                    onToggleFavorite={handleRemoveFavorite}
-                  />
-                ))}
-              </div>
+              {estadoFavoritos === 'cargando' && <p className="aviso-favoritos">Cargando tus recetas guardadas...</p>}
+
+              {estadoFavoritos === 'sinsesion' && (
+                <p className="aviso-favoritos">
+                  <Link to="/login">Inicia sesión</Link> para ver las recetas que guardaste.
+                </p>
+              )}
+
+              {estadoFavoritos === 'error' && (
+                <p className="aviso-favoritos aviso-favoritos--error" role="alert">{errorFavoritos}</p>
+              )}
+
+              {estadoFavoritos === 'listo' && (
+                <>
+                  <p className="contador-guardadas">
+                    Tienes <strong>{totalGuardadas}</strong> {totalGuardadas === 1 ? 'receta guardada' : 'recetas guardadas'}
+                    {totalGuardadas > recetasGuardadas.length && <> (mostrando las {recetasGuardadas.length} más recientes)</>}
+                  </p>
+
+                  {errorFavoritos && (
+                    <p className="aviso-favoritos aviso-favoritos--error" role="alert">{errorFavoritos}</p>
+                  )}
+
+                  {recetasGuardadas.length === 0 ? (
+                    <p className="aviso-favoritos">
+                      Aún no has guardado recetas. <Link to="/">Explora el catálogo</Link> y toca “Guardar en favoritos”.
+                    </p>
+                  ) : (
+                    <div className="grid-recetas">
+                      {recetasGuardadas.map((receta) => (
+                        <RecipeCard
+                          key={receta.id}
+                          receta={receta}
+                          onToggleFavorite={handleRemoveFavorite}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 
@@ -451,4 +503,4 @@ export default function PerfilUsuario() {
       </div>
     </div>
   );
-}
+}

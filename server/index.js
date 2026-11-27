@@ -3,6 +3,9 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { PORT } from './config.js';
 import indexRoutes from './src/routes/index.routes.js';
+import {notFound} from './src/middlewares/errorHandler.js';
+import { errorHandler } from './src/middlewares/errorHandler.js';
+
 
 const app = express();
 

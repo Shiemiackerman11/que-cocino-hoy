@@ -48,3 +48,19 @@ button, input, select, textarea { font-family: inherit; }
   transition: background 0.3s;
 }
 .btn-volver:hover { background: var(--color-primario-oscuro); }
+
+/* Botón "Ver más resultados" (paginación de listados) */
+.contenedor-ver-mas { display: flex; justify-content: center; margin: 30px 0 10px; }
+.btn-ver-mas {
+  padding: 11px 28px;
+  border-radius: 50px;
+  border: 2px solid var(--color-primario);
+  background: #fff;
+  color: var(--color-primario);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.btn-ver-mas:hover:not(:disabled) { background: var(--color-primario); color: #fff; }
+.btn-ver-mas:disabled { opacity: 0.6; cursor: progress; }

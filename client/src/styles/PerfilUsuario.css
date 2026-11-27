@@ -573,3 +573,10 @@
     gap: 10px;
   }
 }
+
+/* ===== Recetas guardadas (favoritos de Spoonacular) ===== */
+.contador-guardadas { color: var(--color-texto-claro); font-size: 0.95rem; margin: -10px 0 20px; }
+.contador-guardadas strong { color: var(--color-primario); }
+.aviso-favoritos { text-align: center; padding: 40px 20px; color: var(--color-texto-claro); }
+.aviso-favoritos--error { color: var(--color-primario); }
+.aviso-favoritos a { color: var(--color-primario); font-weight: 600; }

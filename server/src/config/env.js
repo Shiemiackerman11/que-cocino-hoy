@@ -24,3 +24,11 @@ export const SMTP = {
     pass: process.env.SMTP_PASS,
     from: process.env.MAIL_FROM || '¿Qué cocino hoy? <no-reply@quecocinohoy.local>',
 };
+
+// Spoonacular: la clave vive solo en el servidor (.env). Si falta, el servidor arranca igual
+// y las rutas de recetas responden 503 con un mensaje claro.
+export const SPOONACULAR_API_KEY = (process.env.SPOONACULAR_API_KEY || '').trim();
+export const SPOONACULAR_BASE_URL = process.env.SPOONACULAR_BASE_URL || 'https://api.spoonacular.com';
+// El plan gratuito limita cuánto tiempo se puede guardar en caché la información de Spoonacular
+// (consulta los términos de tu plan antes de subir este valor).
+export const SPOONACULAR_CACHE_MINUTOS = numero(process.env.SPOONACULAR_CACHE_MINUTOS, 60);

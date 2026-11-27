@@ -1,17 +1,38 @@
 // client/src/pages/Inicio.jsx
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import SearchBar from '../components/SearchBar';
 import CategoryCard from '../components/CategoryCard';
-import { obtenerCategorias } from '../services/recetasService';
-import { normalizar } from '../utils/texto';
+import RecipeListCard from '../components/RecipeListCard';
+import { buscarRecetas, obtenerCategorias } from '../services/recetasService';
+import useDebounce from '../utils/useDebounce';
 import '../styles/Inicio.css';
 
 const SUGERENCIAS = ['tacos', 'pizza', 'postres', 'bebidas'];
+const RECETAS_POR_PAGINA = 12;
+const MIN_CARACTERES_BUSQUEDA = 2;
 
 function irACategorias() {
   document.getElementById('categorias')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// Lleva a los resultados de recetas si ya se están mostrando; si no, a las categorías.
+function irAResultados() {
+  requestAnimationFrame(() => {
+    const destino = document.getElementById('resultados') ?? document.getElementById('categorias');
+    destino?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+const BUSQUEDA_INICIAL = {
+  estado: 'inactivo', // inactivo | cargando | listo | error
+  datos: [],
+  total: 0,
+  pagina: 1,
+  totalPaginas: 0,
+  criterios: { q: '', ingredientes: [] },
+  error: '',
+};
 
 export default function Inicio() {
   const [categorias, setCategorias] = useState([]);
@@ -26,6 +47,16 @@ export default function Inicio() {
   const [inputIngrediente, setInputIngrediente] = useState('');
   const idInputIngredientes = useId();
 
+  // Estado 3: recetas encontradas en Spoonacular (por nombre y/o ingredientes)
+  const [busqueda, setBusqueda] = useState(BUSQUEDA_INICIAL);
+  const [cargandoMas, setCargandoMas] = useState(false);
+  const [errorMas, setErrorMas] = useState('');
+  const idBusqueda = useRef(0); // descarta respuestas de búsquedas ya reemplazadas
+
+  const consultaLimpia = consulta.trim();
+  const consultaRetrasada = useDebounce(consultaLimpia, 500);
+  const ingredientesClave = ingredientes.join(',');
+
   useEffect(() => {
     document.title = 'Delicias Culinarias - Menú Dinámico';
     let activo = true;
@@ -39,6 +70,69 @@ export default function Inicio() {
       activo = false;
     };
   }, []);
+
+  // --- Búsqueda de recetas: nombre y/o ingredientes, con espera para no gastar consultas por tecla ---
+  useEffect(() => {
+    const q = consultaRetrasada.length >= MIN_CARACTERES_BUSQUEDA ? consultaRetrasada : '';
+    const lista = ingredientesClave ? ingredientesClave.split(',') : [];
+    const identificador = ++idBusqueda.current;
+    const controlador = new AbortController();
+    setErrorMas('');
+
+    if (!q && lista.length === 0) {
+      setBusqueda(BUSQUEDA_INICIAL);
+      return undefined;
+    }
+
+    setBusqueda((previa) => ({ ...previa, estado: 'cargando', error: '' }));
+    buscarRecetas({ q, ingredientes: lista, pagina: 1, limite: RECETAS_POR_PAGINA, signal: controlador.signal })
+      .then(({ datos, paginacion }) => {
+        if (identificador !== idBusqueda.current) return;
+        setBusqueda({
+          estado: 'listo',
+          datos,
+          total: paginacion.total,
+          pagina: 1,
+          totalPaginas: paginacion.total_paginas,
+          criterios: { q, ingredientes: lista },
+          error: '',
+        });
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError' || identificador !== idBusqueda.current) return;
+        setBusqueda({ ...BUSQUEDA_INICIAL, estado: 'error', error: err.message });
+      });
+
+    return () => controlador.abort();
+  }, [consultaRetrasada, ingredientesClave]);
+
+  const cargarMasRecetas = async () => {
+    const identificador = idBusqueda.current;
+    const siguiente = busqueda.pagina + 1;
+    setCargandoMas(true);
+    setErrorMas('');
+    try {
+      const { datos, paginacion } = await buscarRecetas({
+        ...busqueda.criterios,
+        pagina: siguiente,
+        limite: RECETAS_POR_PAGINA,
+      });
+      if (identificador !== idBusqueda.current) return;
+      setBusqueda((previa) => {
+        const yaMostradas = new Set(previa.datos.map((r) => r.id));
+        return {
+          ...previa,
+          datos: [...previa.datos, ...datos.filter((r) => !yaMostradas.has(r.id))],
+          pagina: siguiente,
+          totalPaginas: paginacion.total_paginas,
+        };
+      });
+    } catch (err) {
+      if (identificador === idBusqueda.current) setErrorMas(err.message);
+    } finally {
+      setCargandoMas(false);
+    }
+  };
 
   // --- Lógica de encapsulamiento de ingredientes ---
   const agregarIngrediente = (textoCrudo) => {
@@ -98,31 +192,18 @@ export default function Inicio() {
     if (inputIngrediente.trim()) {
       agregarIngrediente(inputIngrediente);
     }
-    irACategorias();
+    irAResultados();
   };
 
-  // --- Filtrado combinado (consulta + ingredientes) ---
-  const resultados = useMemo(() => {
-    const q = normalizar(consulta);
-
-    return categorias.filter((c) => {
-      const textoCategoria = normalizar(`${c.nombre} ${c.palabrasClave}`);
-
-      const coincideConsulta = !q || textoCategoria.includes(q);
-      const coincideIngredientes =
-        ingredientes.length === 0 ||
-        ingredientes.every((ing) => textoCategoria.includes(normalizar(ing)));
-
-      return coincideConsulta && coincideIngredientes;
-    });
-  }, [categorias, consulta, ingredientes]);
-
-  const hayConsulta = consulta.trim() !== '' || ingredientes.length > 0;
-  const sinResultados = hayConsulta && resultados.length === 0;
+  const hayBusqueda = consultaLimpia.length >= MIN_CARACTERES_BUSQUEDA || ingredientes.length > 0;
+  // "inactivo" con texto escrito = la búsqueda está esperando a que dejes de teclear.
+  const buscando = hayBusqueda && (busqueda.estado === 'cargando' || busqueda.estado === 'inactivo');
+  const sinResultados = busqueda.estado === 'listo' && busqueda.datos.length === 0;
+  const hayMasPaginas = busqueda.estado === 'listo' && busqueda.pagina < busqueda.totalPaginas;
 
   const aplicarSugerencia = (texto) => {
     setConsulta(texto);
-    irACategorias();
+    irAResultados();
   };
 
   return (
@@ -138,7 +219,7 @@ export default function Inicio() {
           <SearchBar
             valor={consulta}
             onCambio={setConsulta}
-            onBuscar={irACategorias}
+            onBuscar={irAResultados}
             placeholder="Busca tacos, pizza, postres..."
             etiqueta="Buscar recetas de cocina"
             sugerencias={SUGERENCIAS}
@@ -215,6 +296,72 @@ export default function Inicio() {
         </div>
       </section>
 
+      {hayBusqueda && (
+        <section className="resultados-seccion" id="resultados" aria-labelledby="titulo-resultados">
+          <div className="resultados-header">
+            <h2 id="titulo-resultados">Recetas encontradas</h2>
+            <p className="contador-resultados" id="contadorResultados" aria-live="polite">
+              {buscando && 'Buscando recetas...'}
+              {busqueda.estado === 'listo' &&
+                (sinResultados ? (
+                  <>Sin resultados</>
+                ) : (
+                  <>
+                    Mostrando <strong>{busqueda.datos.length}</strong> de{' '}
+                    <strong>{busqueda.total.toLocaleString('es-MX')}</strong> recetas
+                  </>
+                ))}
+              {busqueda.estado === 'listo' && busqueda.criterios.q && (
+                <> para <strong>“{busqueda.criterios.q}”</strong></>
+              )}
+              {busqueda.estado === 'listo' && busqueda.criterios.ingredientes.length > 0 && (
+                <> con <strong>{busqueda.criterios.ingredientes.join(', ')}</strong></>
+              )}
+            </p>
+          </div>
+
+          {busqueda.estado === 'error' && (
+            <p className="estado-carga estado-carga--error" role="alert">{busqueda.error}</p>
+          )}
+
+          {busqueda.datos.length > 0 && (
+            <div className="grid-recetas">
+              {busqueda.datos.map((receta) => (
+                <RecipeListCard key={receta.id} receta={receta} />
+              ))}
+            </div>
+          )}
+
+          {hayMasPaginas && (
+            <div className="contenedor-ver-mas">
+              <button type="button" className="btn-ver-mas" onClick={cargarMasRecetas} disabled={cargandoMas}>
+                {cargandoMas ? 'Cargando...' : 'Ver más recetas'}
+              </button>
+            </div>
+          )}
+          {errorMas && <p className="estado-carga estado-carga--error" role="alert">{errorMas}</p>}
+
+          {sinResultados && (
+            <div className="estado-vacio">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+                <path d="M8 11h6" />
+              </svg>
+              <h3>No encontramos resultados</h3>
+              <p>Intenta con otra palabra, quita algún ingrediente o explora nuestras categorías populares.</p>
+              <div className="sugerencias-vacio">
+                {SUGERENCIAS.slice(0, 3).map((texto) => (
+                  <button key={texto} type="button" className="chip-sugerencia" onClick={() => aplicarSugerencia(texto)}>
+                    {texto}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       <section className="categorias-seccion" id="categorias">
         <div className="categorias-header">
           <span className="etiqueta">— Explora nuestro menú</span>
@@ -222,51 +369,15 @@ export default function Inicio() {
           <p>Navega por nuestras categorías y encuentra tu próximo platillo favorito.</p>
         </div>
 
-        <p className="contador-resultados" id="contadorResultados" aria-live="polite">
-          {hayConsulta &&
-            (sinResultados ? (
-              <>
-                Sin resultados
-                {consulta && <> para <strong>“{consulta}”</strong></>}
-                {ingredientes.length > 0 && <> con ingredientes: <strong>{ingredientes.join(', ')}</strong></>}
-              </>
-            ) : (
-              <>
-                Mostrando <strong>{resultados.length}</strong> de {categorias.length} categorías
-                {consulta && <> para <strong>“{consulta}”</strong></>}
-                {ingredientes.length > 0 && <> con <strong>{ingredientes.join(', ')}</strong></>}
-              </>
-            ))}
-        </p>
-
         {cargando && <p className="estado-carga">Cargando categorías...</p>}
         {error && <p className="estado-carga estado-carga--error">{error}</p>}
 
         <div className="grid-categorias">
-          {resultados.map((cat) => (
+          {categorias.map((cat) => (
             <CategoryCard key={cat.id} categoria={cat} />
           ))}
         </div>
-
-        {sinResultados && (
-          <div className="estado-vacio">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-              <path d="M8 11h6" />
-            </svg>
-            <h3>No encontramos resultados</h3>
-            <p>Intenta con otra palabra, quita algún ingrediente o explora nuestras categorías populares.</p>
-            <div className="sugerencias-vacio">
-              {SUGERENCIAS.slice(0, 3).map((texto) => (
-                <button key={texto} type="button" className="chip-sugerencia" onClick={() => aplicarSugerencia(texto)}>
-                  {texto}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );
-}
+}

@@ -13,6 +13,11 @@ export function obtenerUsuario() {
   }
 }
 
+// JWT de la sesión real (en modo demostración no existe).
+export function obtenerToken() {
+  return localStorage.getItem(CLAVE_TOKEN);
+}
+
 export function cerrarSesion() {
   localStorage.removeItem(CLAVE_USUARIO);
   localStorage.removeItem(CLAVE_TOKEN);
@@ -30,7 +35,7 @@ async function enviar(ruta, cuerpo, mensajeError) {
     body: JSON.stringify(cuerpo),
   });
   const datos = await respuesta.json().catch(() => ({}));
-  if (!respuesta.ok) throw new Error(datos.mensaje || mensajeError);
+  if (!respuesta.ok) throw new Error(datos.error || datos.mensaje || mensajeError);
   return datos;
 }
 
@@ -47,9 +52,15 @@ export async function loginUsuario(email, password) {
     guardarSesion(usuario);
     return usuario;
   }
-  const datos = await enviar('/auth/login', { email, password }, 'Correo o contraseña incorrectos.');
-  guardarSesion(datos.usuario, datos.token);
-  return datos.usuario;
+  const datos = await enviar('/auth/login', { correo: email, password }, 'Correo o contraseña incorrectos.');
+  const nombre = datos.cuenta?.nom_pla ?? email.split('@')[0];
+  const usuario = {
+    nombre: `${nombre} ${datos.cuenta?.prim_ap ?? ''}`.trim(),
+    correo: datos.cuenta?.correo ?? email,
+    inicial: nombre.charAt(0).toUpperCase(),
+  };
+  guardarSesion(usuario, datos.token);
+  return usuario;
 }
 
 export async function registrarUsuario(datos) {
