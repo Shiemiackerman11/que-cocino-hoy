@@ -112,13 +112,22 @@ export default function Navbar({ categorias = [] }) {
               </div>
             </li>
 
+            
             <li>
-              {usuario ? (
-                <NavLink to="/perfil" onClick={cerrarMenus}>Mi perfil</NavLink>
-              ) : (
-                <NavLink to="/login" onClick={cerrarMenus}>Iniciar sesión</NavLink>
-              )}
-            </li>
+    {usuario ? (
+        <NavLink to="/perfil" onClick={cerrarMenus}>Mi perfil</NavLink>
+    ) : (
+        <NavLink to="/login" onClick={cerrarMenus}>Iniciar sesión</NavLink>
+    )}
+</li>
+
+{/* Enlace Admin */}
+<li>
+    <NavLink to="/admin/login" onClick={cerrarMenus}
+        style={{ opacity: 0.75, fontSize: '0.85rem' }}>
+        Admin
+    </NavLink>
+</li>
           </ul>
         </nav>
       </div>

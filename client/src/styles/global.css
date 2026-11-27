@@ -48,3 +48,8 @@ button, input, select, textarea { font-family: inherit; }
   transition: background 0.3s;
 }
 .btn-volver:hover { background: var(--color-primario-oscuro); }
+/* Evita que admin.css afecte otras páginas */
+body {
+    display: block;
+    min-height: 100vh;
+}

@@ -10,16 +10,39 @@ import { enviarCorreoVerificacion } from '../utils/mailer.js';
 import { validarCorreo, validarPassword, validarTexto } from '../utils/validators.js';
 import { CLIENT_URL, TOKEN_VERIFICACION_HORAS, ADMIN_REGISTRATION_KEY } from '../config/env.js';
 
-// Se compara contra este hash cuando el correo no existe, para no revelar
-// por tiempo de respuesta si una cuenta existe o no.
 const HASH_FALSO = bcrypt.hashSync('contraseña-de-relleno', 10);
+
+// ─── Helpers de cookie ───────────────────────────────────────────────────────
+
+const COOKIE_OPTS = {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+};
+
+// Usuario  → cookie "token"   (12 h)
+// Admin    → cookie "admin_token"  (12 h)
+function setCookie(res, rol, token) {
+    const nombre = rol === 'admin' ? 'admin_token' : 'token';
+    res.cookie(nombre, token, {
+        ...COOKIE_OPTS,
+        maxAge: 12 * 60 * 60 * 1000, // 12 horas en ms
+    });
+}
+
+function clearCookie(res, rol) {
+    const nombre = rol === 'admin' ? 'admin_token' : 'token';
+    res.clearCookie(nombre, { ...COOKIE_OPTS });
+}
+
+// ─── Helpers internos ────────────────────────────────────────────────────────
 
 const rolDesdeTipo = (tipo) => {
     if (!esRol(tipo)) throw new HttpError(400, "El tipo debe ser 'usuario' o 'admin'");
     return tipo;
 };
 
-// Invalida tokens pendientes (solo se permite uno por cuenta) y crea uno nuevo.
 async function crearTokenVerificacion(client, rol, idCuenta) {
     const { id, tablaVerificacion } = ROLES[rol];
     await client.query(
@@ -38,7 +61,6 @@ async function crearTokenVerificacion(client, rol, idCuenta) {
     return token;
 }
 
-// Un fallo del correo no debe deshacer el registro: la persona puede pedir reenvío.
 async function enviarVerificacion(rol, cuenta, token) {
     const enlace = `${CLIENT_URL}/verificar-correo?tipo=${rol}&token=${token}`;
     try {
@@ -60,7 +82,8 @@ function verificarClaveAdmin(clave) {
     }
 }
 
-// ---------- Registro ----------
+// ─── Registro ────────────────────────────────────────────────────────────────
+
 const registrar = (rol) => async (req, res) => {
     const body = req.body ?? {};
     if (rol === 'admin') verificarClaveAdmin(body.clave_registro);
@@ -106,7 +129,8 @@ const registrar = (rol) => async (req, res) => {
 export const registrarUsuario = registrar('usuario');
 export const registrarAdmin = registrar('admin');
 
-// ---------- Verificación de correo ----------
+// ─── Verificación de correo ───────────────────────────────────────────────────
+
 export const verificarCorreo = async (req, res) => {
     const { token, tipo } = req.body ?? {};
     const rol = rolDesdeTipo(tipo);
@@ -133,7 +157,6 @@ export const verificarCorreo = async (req, res) => {
         );
 
         if (rol === 'usuario') {
-            // Queda PENDIENTE hasta que un administrador lo apruebe.
             await client.query(
                 `UPDATE usuario
                     SET correo_verificado_en = COALESCE(correo_verificado_en, now())
@@ -179,11 +202,11 @@ export const reenviarVerificacion = async (req, res) => {
         await enviarVerificacion(rol, rows[0], token);
     }
 
-    // Respuesta idéntica exista o no la cuenta (evita enumerar correos).
     res.json({ mensaje: 'Si el correo corresponde a una cuenta pendiente de verificación, recibirás un nuevo enlace.' });
 };
 
-// ---------- Login ----------
+// ─── Login ───────────────────────────────────────────────────────────────────
+
 const iniciarSesion = (rol) => async (req, res) => {
     const body = req.body ?? {};
     const correo = validarCorreo(body.correo);
@@ -217,8 +240,13 @@ const iniciarSesion = (rol) => async (req, res) => {
     }
 
     const { password_hash, ...publico } = cuenta;
+    const token = signToken({ sub: cuenta.id, rol });
+
+    // Guardar en cookie HttpOnly
+    setCookie(res, rol, token);
+
     res.json({
-        token: signToken({ sub: cuenta.id, rol }),
+        mensaje: 'Sesión iniciada correctamente',
         rol,
         cuenta: publico,
     });
@@ -226,3 +254,29 @@ const iniciarSesion = (rol) => async (req, res) => {
 
 export const loginUsuario = iniciarSesion('usuario');
 export const loginAdmin = iniciarSesion('admin');
+
+// ─── Logout ──────────────────────────────────────────────────────────────────
+
+export const logoutUsuario = (req, res) => {
+    clearCookie(res, 'usuario');
+    res.json({ mensaje: 'Sesión cerrada' });
+};
+
+export const logoutAdmin = (req, res) => {
+    clearCookie(res, 'admin');
+    res.json({ mensaje: 'Sesión de administrador cerrada' });
+};
+
+// ─── Verificar sesión activa ──────────────────────────────────────────────────
+// El front puede llamar esto al cargar para saber si hay sesión vigente
+
+export const verificarSesion = (rol) => async (req, res) => {
+    const { tabla, id } = ROLES[rol];
+    const { rows } = await pool.query(
+        `SELECT ${id} AS id, nom_pla, prim_ap, correo, estado_cuenta
+           FROM ${tabla} WHERE ${id} = $1`,
+        [req.auth.id]
+    );
+    if (!rows[0]) throw new HttpError(404, 'Cuenta no encontrada');
+    res.json({ rol, cuenta: rows[0] });
+};

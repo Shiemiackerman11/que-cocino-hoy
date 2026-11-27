@@ -3,13 +3,17 @@ import { verifyJwt } from '../utils/jwt.js';
 import { ROLES, esRol } from '../utils/roles.js';
 import { HttpError } from '../utils/httpError.js';
 
-// Valida el JWT y confirma en la BD que la cuenta sigue ACTIVA
-// (así una suspensión o desactivación surte efecto de inmediato).
 async function autenticar(req) {
-    const [esquema, token] = (req.headers.authorization || '').split(' ');
-    if (esquema !== 'Bearer' || !token) {
-        throw new HttpError(401, 'Se requiere iniciar sesión');
+    // 1. Intentar leer desde cookie HttpOnly
+    let token = req.cookies?.token || req.cookies?.admin_token;
+
+    // 2. Si no hay cookie, intentar desde header Authorization (para Postman/API)
+    if (!token) {
+        const [esquema, tokenHeader] = (req.headers.authorization || '').split(' ');
+        if (esquema === 'Bearer' && tokenHeader) token = tokenHeader;
     }
+
+    if (!token) throw new HttpError(401, 'Se requiere iniciar sesión');
 
     const payload = verifyJwt(token);
     if (!payload || !esRol(payload.rol) || !Number.isInteger(payload.sub)) {
@@ -33,9 +37,8 @@ export const verifyToken = async (req, res, next) => {
     next();
 };
 
-// Para rutas públicas que se comportan distinto si hay sesión (p. ej. ver una receta propia pendiente).
 export const authOpcional = async (req, res, next) => {
-    if (req.headers.authorization) {
+    if (req.headers.authorization || req.cookies?.token || req.cookies?.admin_token) {
         try {
             req.auth = await autenticar(req);
         } catch (error) {
