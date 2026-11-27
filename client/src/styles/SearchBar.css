@@ -22,6 +22,58 @@
 }
 .buscador-caja input::-webkit-search-cancel-button { display: none; }
 
+/* ===== Soporte para cápsulas/tags (Ingredientes) ===== */
+.buscador-caja--tags {
+  border-radius: 28px;
+}
+
+.tags-contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 12px;
+}
+
+.tags-contenedor input {
+  flex: 1 1 130px;
+  min-width: 130px; /* Evita que el input colapse a 0px junto a las cápsulas */
+  padding: 6px 0;
+  color: var(--color-texto);
+}
+
+.tag-ingrediente {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f4f6;
+  color: var(--color-texto);
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.tag-ingrediente button {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tag-ingrediente button:hover {
+  color: var(--color-primario, #b91c1c);
+}
+
 .buscador .btn-limpiar {
   background: none;
   border: none;

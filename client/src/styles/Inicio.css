@@ -57,3 +57,12 @@
 @media (max-width: 400px) {
   .pagina-inicio .grid-categorias { grid-template-columns: 1fr; }
 }
+
+.hero-buscadores {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
