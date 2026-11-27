@@ -109,8 +109,8 @@ export default function PerfilUsuario() {
     setRecetasGuardadas((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const handleLogout = () => {
-    cerrarSesion();
+  const handleLogout = async () => {
+    await cerrarSesion();
     navigate('/');
   };
 

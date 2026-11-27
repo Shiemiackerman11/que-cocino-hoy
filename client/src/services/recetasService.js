@@ -48,12 +48,11 @@ async function enviarInteraccion(id, accion, datos) {
     return;
   }
 
-  const token = localStorage.getItem('qch_token');
   const respuesta = await fetch(`${API_URL}/recetas/${id}/${accion}`, {
     method: 'PUT',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(datos),
   });

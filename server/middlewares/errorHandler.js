@@ -1,4 +1,4 @@
-import { HttpError } from '../utils/httpError.js';
+import { HttpError } from '../src/utils/httpError.js';
 
 export const notFound = (req, res) => {
     res.status(404).json({ error: 'Ruta no encontrada' });

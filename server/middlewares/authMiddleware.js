@@ -1,13 +1,13 @@
-import { pool } from '../../db.js';
-import { verifyJwt } from '../utils/jwt.js';
-import { ROLES, esRol } from '../utils/roles.js';
-import { HttpError } from '../utils/httpError.js';
+import { pool } from '../db.js';
+import { verifyJwt } from '../src/utils/jwt.js';
+import { ROLES, esRol } from '../src/utils/roles.js';
+import { HttpError } from '../src/utils/httpError.js';
 
 // Valida el JWT y confirma en la BD que la cuenta sigue ACTIVA
 // (así una suspensión o desactivación surte efecto de inmediato).
 async function autenticar(req) {
-    const [esquema, token] = (req.headers.authorization || '').split(' ');
-    if (esquema !== 'Bearer' || !token) {
+    const token = leerCookie(req.headers.cookie, 'qch_token');
+    if (!token) {
         throw new HttpError(401, 'Se requiere iniciar sesión');
     }
 
@@ -35,7 +35,7 @@ export const verifyToken = async (req, res, next) => {
 
 // Para rutas públicas que se comportan distinto si hay sesión (p. ej. ver una receta propia pendiente).
 export const authOpcional = async (req, res, next) => {
-    if (req.headers.authorization) {
+    if (leerCookie(req.headers.cookie, 'qch_token')) {
         try {
             req.auth = await autenticar(req);
         } catch (error) {
@@ -51,3 +51,14 @@ export const requireRole = (...roles) => (req, res, next) => {
     }
     next();
 };
+
+function leerCookie(header, nombre) {
+    if (!header) return null;
+    for (const parte of header.split(';')) {
+        const separador = parte.indexOf('=');
+        if (separador < 0 || parte.slice(0, separador).trim() !== nombre) continue;
+        try { return decodeURIComponent(parte.slice(separador + 1).trim()); }
+        catch { return null; }
+    }
+    return null;
+}

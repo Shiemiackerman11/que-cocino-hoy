@@ -35,6 +35,35 @@ export function validarTexto(valor, campo, { max, requerido = true } = {}) {
     return texto;
 }
 
+export function validarFechaNacimiento(valor) {
+    if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+        throw new HttpError(400, 'La fecha de nacimiento no es válida');
+    }
+
+    const [anio, mes, dia] = valor.split('-').map(Number);
+    const esBisiesto = anio % 4 === 0 && (anio % 100 !== 0 || anio % 400 === 0);
+    const diasPorMes = [31, esBisiesto ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (anio < 1 || mes < 1 || mes > 12 || dia < 1 || dia > diasPorMes[mes - 1]) {
+        throw new HttpError(400, 'La fecha de nacimiento no es válida');
+    }
+
+    const hoy = new Date();
+    const anioLimite = hoy.getFullYear() - 18;
+    const mesActual = hoy.getMonth() + 1;
+    const ultimoDiaDelMesLimite = new Date(anioLimite, mesActual, 0).getDate();
+    const diaLimite = Math.min(hoy.getDate(), ultimoDiaDelMesLimite);
+    const fechaLimite = [
+        String(anioLimite).padStart(4, '0'),
+        String(mesActual).padStart(2, '0'),
+        String(diaLimite).padStart(2, '0'),
+    ].join('-');
+
+    if (valor > fechaLimite) {
+        throw new HttpError(400, 'Debes tener al menos 18 años para registrarte');
+    }
+    return valor;
+}
+
 export function validarId(valor, campo = 'El id') {
     const n = Number(valor);
     if (!Number.isInteger(n) || n < 1 || n > 2147483647) {

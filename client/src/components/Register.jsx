@@ -3,6 +3,19 @@ import { Link, useNavigate } from 'react-router-dom';
 import { registrarUsuario } from '../services/authService';
 import '../styles/Register.css';
 
+const hoy = new Date();
+const anioMaximoNacimiento = hoy.getFullYear() - 18;
+const mesMaximoNacimiento = hoy.getMonth();
+const diaMaximoNacimiento = Math.min(
+  hoy.getDate(),
+  new Date(anioMaximoNacimiento, mesMaximoNacimiento + 1, 0).getDate()
+);
+const maxFechaNacimiento = [
+  anioMaximoNacimiento,
+  String(mesMaximoNacimiento + 1).padStart(2, '0'),
+  String(diaMaximoNacimiento).padStart(2, '0')
+].join('-');
+
 export default function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +25,7 @@ export default function Register() {
     nombre: '',
     primer_apellido: '',
     segundo_apellido: '',
+    fecha_nac: '',
     email: '',
     password: ''
   });
@@ -27,15 +41,20 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
-    if (!formData.nombre || !formData.primer_apellido || !formData.email || !formData.password) {
-      setError('Por favor, completa nombre, primer apellido, correo y contraseña.');
+    if (!formData.nombre || !formData.primer_apellido || !formData.fecha_nac || !formData.email || !formData.password) {
+      setError('Por favor, completa nombre, primer apellido, fecha de nacimiento, correo y contraseña.');
       return;
     }
 
     setLoading(true);
     try {
       await registrarUsuario(formData);
-      navigate('/login');
+      navigate('/revisar-correo', {
+        state: {
+          email: formData.email,
+          tipo: 'usuario',
+        }
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -118,6 +137,18 @@ export default function Register() {
                 placeholder="Tu Segundo Apellido" 
                 value={formData.segundo_apellido}
                 onChange={handleChange}
+              />
+            </div>
+
+            <div className="campo">
+              <label htmlFor="fecha_nac">Fecha de nacimiento (debes tener al menos 18 años)</label>
+              <input
+                type="date"
+                id="fecha_nac"
+                max={maxFechaNacimiento}
+                value={formData.fecha_nac}
+                onChange={handleChange}
+                required
               />
             </div>
 

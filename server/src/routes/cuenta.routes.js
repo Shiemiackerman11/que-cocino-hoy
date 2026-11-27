@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken, requireRole } from '../middlewares/authMiddleware.js';
+import { verifyToken, requireRole } from '../../middlewares/authMiddleware.js';
 import {
     obtenerPerfil, actualizarPerfil, cambiarPassword, desactivarCuenta,
 } from '../controllers/cuenta.controller.js';

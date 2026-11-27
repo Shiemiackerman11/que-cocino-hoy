@@ -7,6 +7,7 @@ import Categoria from './pages/Categoria';
 import DetalleReceta from './pages/DetalleReceta';
 import PerfilUsuario from './pages/PerfilUsuario';
 import NoEncontrada from './pages/NoEncontrada';
+import RevisarCorreo from './pages/RevisarCorreo';
 import Login from './components/Login';
 import Register from './components/Register';
 
@@ -32,6 +33,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Register />} />
         <Route path="/perfil" element={<PerfilUsuario />} />
+        <Route path="/revisar-correo" element={<RevisarCorreo />} />
+        <Route path="/verificar-correo" element={<RevisarCorreo />} />
         <Route path="*" element={<NoEncontrada />} />
       </Routes>
     </BrowserRouter>

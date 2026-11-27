@@ -75,10 +75,8 @@ CREATE TABLE usuario (
         CHECK (fecha_nac <= (CURRENT_DATE - INTERVAL '18 years')),
 
     CONSTRAINT chk_usuario_activo_verificado
-        CHECK (estado_cuenta <> 'ACTIVO' OR correo_verificado_en IS NOT NULL),
+        CHECK (estado_cuenta <> 'ACTIVO' OR correo_verificado_en IS NOT NULL)
 
-    CONSTRAINT chk_usuario_activo_con_admin
-        CHECK (estado_cuenta <> 'ACTIVO' OR id_admin IS NOT NULL)
 );
 
 

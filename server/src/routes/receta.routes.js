@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyToken, authOpcional, requireRole } from '../middlewares/authMiddleware.js';
+import { verifyToken, authOpcional, requireRole } from '../../middlewares/authMiddleware.js';
 import {
     listarRecetas, sugerirReceta, obtenerReceta, listarMisRecetas,
     crearReceta, actualizarReceta, eliminarReceta,
