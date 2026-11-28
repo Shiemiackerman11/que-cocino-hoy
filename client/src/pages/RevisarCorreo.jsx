@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { reenviarVerificacion, verificarCorreo } from '../services/authService';
+import '../styles/Login.css';
 import '../styles/revisarCorreo.css';
 
 export default function RevisarCorreo() {
@@ -46,13 +47,13 @@ export default function RevisarCorreo() {
     const procesando = estado === 'verificando';
 
     return (
-        <div className="revisar-correo-container auth-page">
-            <header>
+        <div className="revisar-correo-container login-page">
+            <header className="login-header">
                 <Link to="/" className="logo"><span className="logo-icono">🍳</span>Qué cocino hoy</Link>
                 <Link to="/" className="volver">← Volver al inicio</Link>
             </header>
-            <main className="revisar-correo auth-page">
-                <div className="mensaje-reenviar">
+            <main className="revisar-correo-main">
+                <section className="mensaje-reenviar">
                     {procesando ? (
                         <><h1>Verificando tu correo…</h1><p>Espera un momento mientras confirmamos tu cuenta.</p></>
                     ) : verificado ? (
@@ -82,8 +83,16 @@ export default function RevisarCorreo() {
                             </button>
                         </>
                     )}
-                </div>
+                </section>
             </main>
+            <footer className="login-footer">
+                <span>Buenas ideas para aprovechar lo que ya tienes.</span>
+                <div className="footer-enlaces">
+                    <Link to="/privacidad">Privacidad</Link>
+                    <Link to="/terminos">Términos</Link>
+                    <Link to="/ayuda">Ayuda</Link>
+                </div>
+            </footer>
         </div>
     );
 }
